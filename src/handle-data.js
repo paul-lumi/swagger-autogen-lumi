@@ -196,7 +196,7 @@ function clearData(data, imports) {
              */
             let expressAsyncHandler = null;
             if (imports) {
-                let idx = imports.findIndex(e => e.fileName == 'express-async-handler');
+                let idx = imports.findIndex(e => e.fileName == 'express-async-handler' || e.fileName.endsWith('middlewares/promise.wrap'));
                 if (idx > -1) {
                     if (!imports[idx].varFileName && imports[idx].exports.length > 0) {
                         expressAsyncHandler = imports[idx].exports[0].varName;
