@@ -12,7 +12,7 @@ const symbols = platform === 'win32' ? { success: '', failed: '' } : { success: 
 let options = null;
 let recLang = null;
 
-module.exports = function (args, endpointsFiles, data) {
+module.exports = function (args, endpointsFiles, data, baseFilePath) {
     let outputFile = null;
     options = { language: null, disableLogs: false, disableWarnings: false, openapi: null, autoHeaders: true, autoQuery: true, autoBody: true, autoResponse: true };
     if (args && endpointsFiles) {
@@ -35,13 +35,13 @@ module.exports = function (args, endpointsFiles, data) {
     swaggerTags.setDisableLogs(options.disableLogs);
 
     if(outputFile && endpointsFiles){
-        return init(outputFile, endpointsFiles, data);
+        return init(outputFile, endpointsFiles, data, baseFilePath);
     } else {
-        return async (outputFile, endpointsFiles, data) => init(outputFile, endpointsFiles, data);
+        return async (outputFile, endpointsFiles, data, baseFilePath) => init(outputFile, endpointsFiles, data, baseFilePath);
     }
 };
 
-const init = async (outputFile, endpointsFiles, data) => {
+const init = async (outputFile, endpointsFiles, data, baseFilePath) => {
     try {
         if (!outputFile) throw console.error("\nError: 'outputFile' was not specified.");
         if (!endpointsFiles) throw console.error("\nError: 'endpointsFiles' was not specified.");
@@ -50,7 +50,7 @@ const init = async (outputFile, endpointsFiles, data) => {
         if (platform === 'win32') {
             // TODO: Implement relative path for Windows
         } else if (outputFile.split(new RegExp("^/")).length == 1 && process && process.argv[1]) {
-            let basePath = process.argv[1].split('/').slice(0, -1).join('/');
+            let basePath = baseFilePath || process.argv[1].split('/').slice(0, -1).join('/');
             outputFile = await handleFiles.resolvePathFile(outputFile, basePath);
         }
 
@@ -63,7 +63,7 @@ const init = async (outputFile, endpointsFiles, data) => {
             if (platform === 'win32') {
                 // TODO: Implement relative path for Windows
             } else if (file.split(new RegExp("^/")).length == 1 && process && process.argv[1]) {
-                let basePath = process.argv[1].split('/').slice(0, -1).join('/');
+                let basePath = baseFilePath || process.argv[1].split('/').slice(0, -1).join('/');
                 file = await handleFiles.resolvePathFile(file, basePath);
             }
 
